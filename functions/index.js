@@ -64,6 +64,16 @@ app.post('/scream', async (request, response) => {
   }
 });
 
+const isEmpty = (string) => {
+  return string.trim() === '';
+};
+
+const isEmail = (email) => {
+  const emailRegEx = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return email.match(emailRegEx);
+};
+
+// Signup route
 app.post('/signup', async (request, response) => {
   let token, userId;
   try {
@@ -74,6 +84,30 @@ app.post('/signup', async (request, response) => {
       handle: request.body.handle,
     };
 
+    const errors = {};
+
+    if (isEmpty(newUser.email)) {
+      errors.email = 'Must not be empty';
+    } else if (!isEmail(newUser.email)) {
+      errors.email = 'Must be a valid email address';
+    }
+
+    if (isEmpty(newUser.password)) {
+      errors.password = 'Must not be empty';
+    }
+
+    if (newUser.password !== newUser.confirmPassword) {
+      errors.confirmPassword = 'Passwords must match';
+    }
+
+    if (isEmpty(newUser.handle)) {
+      errors.handle = 'Must not be empty';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      return response.status(400).json(errors);
+    }
+
     // Check if handle already is taken
     const user = await db.doc(`/users/${newUser.handle}`).get();
     if (user.exists) {
@@ -82,12 +116,12 @@ app.post('/signup', async (request, response) => {
       });
     }
 
-    const createdUserResponse = await firebase
+    const firebaseSignupResponse = await firebase
       .auth()
       .createUserWithEmailAndPassword(newUser.email, newUser.password);
 
-    token = await createdUserResponse.user.getIdToken();
-    userId = createdUserResponse.user.uid;
+    token = await firebaseSignupResponse.user.getIdToken();
+    userId = firebaseSignupResponse.user.uid;
 
     const userCredentials = {
       handle: newUser.handle,
@@ -105,9 +139,44 @@ app.post('/signup', async (request, response) => {
         error: 'Email is already in use',
       });
     }
-    return response.status(500).json({
-      error,
-    });
+    return response.status(500).json({error: error.code});
+  }
+});
+
+app.post('/login', async (request, response) => {
+  try {
+    const user = {
+      email: request.body.email,
+      password: request.body.password,
+    };
+
+    let errors = {};
+
+    if (isEmpty(user.email)) {
+      errors.email = 'Must not be empty';
+    }
+
+    if (isEmpty(user.password)) {
+      errors.password = 'Must not be empty';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      return response.status(400).json(errors);
+    }
+
+    const firebaseSigninResponse = await firebase
+      .auth()
+      .signInWithEmailAndPassword(user.email, user.password);
+
+    const token = await firebaseSigninResponse.user.getIdToken();
+    return response.status(201).json({ token });
+  } catch (error) {
+    console.log(error);
+    if (error.code === 'auth/wrong-password') {
+      return response.status(403).json({general: 'Wrong credentials, please try again'});
+    }
+    
+    return response.status(500).json({error: error.code});
   }
 });
 
