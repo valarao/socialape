@@ -1,17 +1,18 @@
+require('dotenv').config();
 const firebase = require('firebase');
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const app = require('express')();
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyDixSp0sOELnZmAjmAS29-2Lf3ccmMaS70',
-  authDomain: 'socialape-84cf0.firebaseapp.com',
-  databaseURL: 'https://socialape-84cf0.firebaseio.com',
-  projectId: 'socialape-84cf0',
-  storageBucket: 'socialape-84cf0.appspot.com',
-  messagingSenderId: '716693370524',
-  appId: '1:716693370524:web:f9fac51db136be7d6d1f59',
-  measurementId: 'G-27GMRQYTCN',
+  apiKey: process.env.API_KEY,
+  authDomain: process.env.AUTH_DOMAIN,
+  databaseURL: process.env.DATABASE_URL,
+  projectId: process.env.PROJECT_ID,
+  storageBucket: process.env.STORAGE_BUCKET,
+  messagingSenderId: process.env.MESSAGING_SENDER_ID,
+  appId: process.env.APP_ID,
+  measurementId: process.env.MEASUREMENT_ID,
 };
 
 firebase.initializeApp(firebaseConfig);
