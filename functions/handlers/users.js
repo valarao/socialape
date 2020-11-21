@@ -102,19 +102,18 @@ exports.uploadImage = async (request, response) => {
     let imageToBeUploaded = {};
 
     busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
-      if (mimetype !== 'image/jpeg' && mimetype !== 'image/png') {
-        return response.status(400).json({ error: 'Wrong file type submitted' });
-      }
-      const imageExtension = filename.split('.')[
-        filename.split('.').length - 1
-      ];
-      imageFilename = `${Math.round(
-        Math.random() * 10000000000000,
-      )}.${imageExtension}`;
-      const filepath = path.join(os.tmpdir(), imageFilename);
-      imageToBeUploaded = { filepath, mimetype };
-      file.pipe(fs.createWriteStream(filepath));
-    });
+        if (mimetype !== 'image/jpeg' && mimetype !== 'image/png') {
+          throw new Error('Wrong file type submitted');
+        }
+
+        const imageExtension = filename.split('.')[filename.split('.').length - 1];
+        imageFilename = `${Math.round(
+          Math.random() * 10000000000000
+        )}.${imageExtension}`;
+        const filepath = path.join(os.tmpdir(), imageFilename);
+        imageToBeUploaded = { filepath, mimetype };
+        file.pipe(fs.createWriteStream(filepath));
+      });
 
     busboy.on('finish', async () => {
       await admin
@@ -138,8 +137,13 @@ exports.uploadImage = async (request, response) => {
     return response
       .status(201)
       .json({ message: 'Image uploaded successfully' });
-  } catch (error) {
+  } 
+  catch (error) {
     console.log(error);
+    if (error.message === 'Wrong file type submitted') {
+      return response.status(400).json({ error: 'Wrong file type submitted' });
+    }
+
     return response.status(500).json({ error: error.code });
   }
 };
