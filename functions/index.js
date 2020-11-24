@@ -7,6 +7,10 @@ const {
   postOneScream,
   getScream,
   commentOnScream,
+  likeScream,
+  unlikeScream,
+  deleteScream,
+
 } = require('./handlers/screams');
 const {
   signup,
@@ -23,10 +27,9 @@ app.get('/screams', getAllScreams);
 app.post('/scream', auth, postOneScream);
 app.get('/scream/:screamId', getScream);
 app.post('/scream/:screamId/comment', auth, commentOnScream);
-
-// TODO: Delete scream
-// TODO: Like scream
-// TODO: Unlike scream
+app.get('/scream/:screamId/like', auth, likeScream);
+app.get('/scream/:screamId/unlike', auth, unlikeScream);
+app.delete('/scream/:screamId', auth, deleteScream);
 
 // User routes
 app.post('/signup', signup);
