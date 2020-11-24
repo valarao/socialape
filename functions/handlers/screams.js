@@ -94,7 +94,7 @@ exports.commentOnScream = async (request, response) => {
     }
 
     await db.collection('comments').add(newComment);
-    response.json(newComment);
+    return response.json(newComment);
   } catch (error) {
     console.log(error);
     return response.status(500).json({
