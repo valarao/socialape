@@ -18,6 +18,8 @@ module.exports = async (request, response, next) => {
       .get();
     
     request.user.handle = firebaseUserData.docs[0].data().handle;
+    request.user.imageUrl = firebaseUserData.docs[0].data().imageUrl;
+
     return next();
   } catch (error) {
       console.error('Error while verifying token ', error);
