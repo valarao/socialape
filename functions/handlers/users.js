@@ -6,12 +6,16 @@ const fs = require('fs');
 
 const { admin, db } = require('../util/admin');
 const config = require('../util/config');
-const { validateSignupData, validateLoginData } = require('../util/validators');
+const {
+  validateSignupData,
+  validateLoginData,
+  reduceUserDetails,
+} = require('../util/validators');
 
 firebase.initializeApp(config);
 
+// Sign users up
 exports.signup = async (request, response) => {
-  let token, userId;
   try {
     const newUser = {
       email: request.body.email,
@@ -40,8 +44,8 @@ exports.signup = async (request, response) => {
       .auth()
       .createUserWithEmailAndPassword(newUser.email, newUser.password);
 
-    token = await firebaseSignupResponse.user.getIdToken();
-    userId = firebaseSignupResponse.user.uid;
+    const token = await firebaseSignupResponse.user.getIdToken();
+    const userId = firebaseSignupResponse.user.uid;
 
     const userCredentials = {
       handle: newUser.handle,
@@ -64,6 +68,7 @@ exports.signup = async (request, response) => {
   }
 };
 
+// Log user in
 exports.login = async (request, response) => {
   try {
     const user = {
@@ -94,6 +99,19 @@ exports.login = async (request, response) => {
   }
 };
 
+// Add user details
+exports.addUserDetails = async (request, response) => {
+  try {
+    const userDetails = reduceUserDetails(request.body);
+    await db.doc(`/users/${request.user.handle}`).update(userDetails);
+    return response.status(201).json({ message: 'Details added successfully' });
+  } catch (error) {
+    console.log(error);
+    return response.status(500).json({ error: error.code });
+  }
+};
+
+// Upload a profile image for user
 exports.uploadImage = async (request, response) => {
   try {
     const busboy = new Busboy({ headers: request.headers });
@@ -102,18 +120,20 @@ exports.uploadImage = async (request, response) => {
     let imageToBeUploaded = {};
 
     busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
-        if (mimetype !== 'image/jpeg' && mimetype !== 'image/png') {
-          throw new Error('Wrong file type submitted');
-        }
+      if (mimetype !== 'image/jpeg' && mimetype !== 'image/png') {
+        throw new Error('Wrong file type submitted');
+      }
 
-        const imageExtension = filename.split('.')[filename.split('.').length - 1];
-        imageFilename = `${Math.round(
-          Math.random() * 10000000000000
-        )}.${imageExtension}`;
-        const filepath = path.join(os.tmpdir(), imageFilename);
-        imageToBeUploaded = { filepath, mimetype };
-        file.pipe(fs.createWriteStream(filepath));
-      });
+      const imageExtension = filename.split('.')[
+        filename.split('.').length - 1
+      ];
+      imageFilename = `${Math.round(
+        Math.random() * 10000000000000,
+      )}.${imageExtension}`;
+      const filepath = path.join(os.tmpdir(), imageFilename);
+      imageToBeUploaded = { filepath, mimetype };
+      file.pipe(fs.createWriteStream(filepath));
+    });
 
     busboy.on('finish', async () => {
       await admin
@@ -137,13 +157,35 @@ exports.uploadImage = async (request, response) => {
     return response
       .status(201)
       .json({ message: 'Image uploaded successfully' });
-  } 
-  catch (error) {
+  } catch (error) {
     console.log(error);
     if (error.message === 'Wrong file type submitted') {
       return response.status(400).json({ error: 'Wrong file type submitted' });
     }
 
+    return response.status(500).json({ error: error.code });
+  }
+};
+
+// Get own user details
+exports.getAuthenticatedUser = async (request, response) => {
+  try {
+    const userData = {};
+    const userDoc = await db.doc(`/users/${request.user.handle}`).get();
+    if (userDoc.exists) {
+      userData.credentials = userDoc.data();
+      const likes = await db
+        .collection('likes')
+        .where('userHandle', '==', request.user.handle)
+        .get();
+      userData.likes = [];
+      likes.forEach((like) => {
+        userData.likes.push(like.data());
+      });
+    }
+    return response.status(200).json(userData);
+  } catch (error) {
+    console.log(error);
     return response.status(500).json({ error: error.code });
   }
 };
