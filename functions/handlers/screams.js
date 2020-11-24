@@ -208,7 +208,7 @@ exports.deleteScream = async (request, response) => {
     }
 
     await screamDoc.delete()
-    return response.status(202).json({ message: 'Scream deleted successfully '});
+    return response.status(202).json({ message: 'Scream deleted successfully'});
   } catch (error) {
     console.log(error);
     return response.status(500).json({
