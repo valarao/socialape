@@ -1,7 +1,7 @@
 const { request, response } = require('express');
 const { db } = require('../util/admin');
 
-exports.getAllScreams = async (request, response) => {
+exports.getAllScreams = async (_request, response) => {
   try {
     const docs = await db
       .collection('screams')
@@ -81,6 +81,8 @@ exports.getScream = async (request, response) => {
 // Comment on a scream
 exports.commentOnScream = async (request, response) => {
   try {
+    console.log(`Body: ${request.body}`);
+    console.log(`Body body: ${request.body.body}`);
     if (request.body.body.trim() === '') {
       return response.status(400).json({ error: 'Must not be empty' });
     }
