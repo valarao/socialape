@@ -62,14 +62,16 @@ exports.createNotificationOnLike = functions.firestore
         throw new Error('Scream document not found');
       }
 
-      db.doc(`/notifications/${snapshot.id}`).set({
-        createdAt: new Date().toISOString(),
-        recipient: screamDoc.data().userHandle,
-        sender: snapshot.data().userHandle,
-        type: 'like',
-        read: false,
-        screamId: screamDoc.id,
-      });
+      if (screamDoc.data().userHandle !== snapshot.data().userHandle) {
+        db.doc(`/notifications/${snapshot.id}`).set({
+          createdAt: new Date().toISOString(),
+          recipient: screamDoc.data().userHandle,
+          sender: snapshot.data().userHandle,
+          type: 'like',
+          read: false,
+          screamId: screamDoc.id,
+        });
+      }
     } catch (error) {
       console.log(error);
     }
@@ -109,3 +111,52 @@ exports.createNotificationOnComment = functions.firestore
       console.log(error);
     }
   });
+
+exports.onUserImageChange = functions.firestore
+  .document('/users/{userId}')
+  .onUpdate(async (change) => {
+    try {
+      if (change.before.data().imageUrl !== change.after.data().imageUrl) {
+        const batch = db.batch();
+        const screamsCollection = await db
+          .collection('screams')
+          .where('userHandle', '==', change.before.data().handle)
+          .get();
+        screamsCollection.forEach((screamDoc) => {
+          const scream = db.doc(`/screams/${screamDoc.id}`);
+          batch.update(scream, { userImage: change.after.data().imageUrl });
+        });
+        await batch.commit();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  });
+
+exports.onScreamDelete = functions.firestore
+.document('/screams/{screamId}')
+.onDelete(async (_snapshot, context) => {
+  try {
+    const screamId = context.params.screamId;
+    const batch = db.batch();
+
+    const commentsCollection = await db.collection('comments').where('screamId', '==', screamId).get();
+    commentsCollection.forEach((commentDoc) => {
+      batch.delete(db.doc(`/comments/${commentDoc.id}`));
+    });
+
+    const likesCollection = await db.collection('likes').where('screamId', '==', screamId).get();
+    likesCollection.forEach((likeDoc) => {
+      batch.delete(db.doc(`/likes/${likeDoc.id}`));
+    });
+
+    const notificationsCollection = await db.collection('notifications').where('screamId', '==', screamId).get();
+    notificationsCollection.forEach((notificationDoc) => {
+      batch.delete(db.doc(`/notifications/${notificationDoc.id}`));
+    });
+
+    await batch.commit();
+  } catch (error) {
+    console.log(error);
+  }
+});
