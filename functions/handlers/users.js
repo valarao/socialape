@@ -64,7 +64,7 @@ exports.signup = async (request, response) => {
         error: 'Email is already in use',
       });
     }
-    return response.status(500).json({ error: error.code });
+    return response.status(500).json({ general: 'Something went wrong, please try again.' });
   }
 };
 
@@ -186,6 +186,6 @@ exports.getAuthenticatedUser = async (request, response) => {
     return response.status(200).json(userData);
   } catch (error) {
     console.log(error);
-    return response.status(500).json({ error: error.code });
+    return response.status(500).json({ general: error.code });
   }
 };
