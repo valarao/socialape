@@ -119,7 +119,7 @@ exports.uploadImage = async (request, response) => {
     let imageFilename;
     let imageToBeUploaded = {};
 
-    busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
+    busboy.on('file', (_fieldname, file, filename, _encoding, mimetype) => {
       if (mimetype !== 'image/jpeg' && mimetype !== 'image/png') {
         throw new Error('Wrong file type submitted');
       }
@@ -170,20 +170,99 @@ exports.uploadImage = async (request, response) => {
 // Get own user details
 exports.getAuthenticatedUser = async (request, response) => {
   try {
-    const userData = {};
     const userDoc = await db.doc(`/users/${request.user.handle}`).get();
-    if (userDoc.exists) {
-      userData.credentials = userDoc.data();
-      const likes = await db
-        .collection('likes')
-        .where('userHandle', '==', request.user.handle)
-        .get();
-      userData.likes = [];
-      likes.forEach((like) => {
-        userData.likes.push(like.data());
-      });
+
+    if (!userDoc.exists) {
+      return response.status(400).json({ error: 'User not found' });
     }
+
+    const userData = {};
+    userData.credentials = userDoc.data();
+    const likesCollection = await db
+      .collection('likes')
+      .where('userHandle', '==', request.user.handle)
+      .get();
+
+    userData.likes = [];
+    likesCollection.forEach((like) => {
+      userData.likes.push(like.data());
+    });
+
+    const notificationsCollection = await db
+      .collection('notifications')
+      .where('recipient', '==', request.user.handle)
+      .orderBy('createdAt', 'desc')
+      .limit(10)
+      .get();
+
+    userData.notifications = [];
+    notificationsCollection.forEach((notification) => {
+      userData.notifications.push({
+        recipient: notification.data().recipient,
+        sender: notification.data().sender,
+        createdAt: notification.data().createdAt,
+        screamId: notification.data().screamId,
+        type: notification.data().type,
+        read: notification.data().read,
+        notificationId: notification.id,
+      });
+    });
+
     return response.status(200).json(userData);
+  } catch (error) {
+    console.log(error);
+    return response.status(500).json({ error: error.code });
+  }
+};
+
+// Get any user's details
+exports.getUserDetails = async (request, response) => {
+  try {
+    const userDoc = await db.doc(`/users/${request.params.handle}`).get();
+
+    if (!userDoc.exists) {
+      return response.status(400).json({ error: 'User not found' });
+    }
+
+    const userData = {};
+    userData.user = userDoc.data();
+    const screamsCollection = await db
+      .collection('screams')
+      .where('userHandle', '==', request.params.handle)
+      .orderBy('createdAt', 'desc')
+      .get();
+
+    userData.screams = [];
+    screamsCollection.forEach((scream) => {
+      userData.screams.push({
+        body: scream.data().body,
+        createdAt: scream.data().createdAt,
+        userHandle: scream.data().userHandle,
+        userImage: scream.data().userImage,
+        likeCount: scream.data().likeCount,
+        commentCount: scream.data().commentCount,
+        screamId: scream.id,
+      });
+    });
+
+    return response.status(200).json(userData);
+  } catch (error) {
+    console.log(error);
+    return response.status(500).json({ error: error.code });
+  }
+};
+
+exports.markNotificationsRead = async (request, response) => {
+  try {
+    const batch = db.batch();
+
+    request.body.forEach(async (notificationId) => {
+      const notification = db.doc(`/notifications/${notificationId}`);
+      batch.update(notification, { read: true });
+    });
+
+    await batch.commit();
+    return response.status(200).json({ message: 'Notifications marked read' });
   } catch (error) {
     console.log(error);
     return response.status(500).json({ error: error.code });
