@@ -11,7 +11,6 @@ class Home extends Component {
 
   async componentDidMount() {
     const screamsResponse = await axios.get(`${FB_FUNCTIONS_URL}/screams`);
-    console.log(screamsResponse.data);
     this.setState({
       screams: screamsResponse.data,
     });
