@@ -5,18 +5,19 @@ import Scream from '../components/Scream';
 
 class Home extends Component {
   state = {
-    screams: null,
+    screams: [],
   }
 
   async componentDidMount() {
     const screamsResponse = await axios.get('/screams');
+    console.log(screamsResponse.data);
     this.setState({
       screams: screamsResponse.data,
     });
   }
 
   render() {
-    const recentScreamsMarkup = this.state.screams != null ? (
+    const recentScreamsMarkup = this.state.screams && this.state.screams.length !== 0 ? (
       this.state.screams.map((scream, index) => <Scream key={index} scream={scream} />)
     ) : (
       <p>Loading...</p>
