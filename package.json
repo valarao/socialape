@@ -20,7 +20,6 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
-  "proxy": "https://us-central1-socialape-84cf0.cloudfunctions.net/api",
   "eslintConfig": {
     "extends": [
       "react-app",

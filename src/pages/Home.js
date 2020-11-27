@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import { FB_FUNCTIONS_URL } from '../util/constants';
 import Grid from '@material-ui/core/Grid';
 import Scream from '../components/Scream';
 
@@ -9,7 +10,7 @@ class Home extends Component {
   }
 
   async componentDidMount() {
-    const screamsResponse = await axios.get('/screams');
+    const screamsResponse = await axios.get(`${FB_FUNCTIONS_URL}/screams`);
     console.log(screamsResponse.data);
     this.setState({
       screams: screamsResponse.data,
