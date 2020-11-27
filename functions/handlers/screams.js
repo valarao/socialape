@@ -13,7 +13,7 @@ exports.getAllScreams = async (_request, response) => {
       screams.push({
         screamId: scream.id,
         body: scream.data().body,
-        userHandle: scream.data().body,
+        userHandle: scream.data().userHandle,
         createdAt: scream.data().createdAt,
         commentCount: scream.data().commentCount,
         likeCount: scream.data().likeCount,
