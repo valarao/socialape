@@ -100,7 +100,6 @@ class Login extends Component {
           <Typography variant='h2' className={classes.pageTitle}>
             Login
           </Typography>
-          <form noValidate onSubmit={this.handleSubmit}>
             <TextField
               id='email'
               name='email'
@@ -136,6 +135,7 @@ class Login extends Component {
               color='primary'
               className={classes.button}
               disabled={loading}
+              onClick={this.handleSubmit}
             >
               Login
               {loading && (
@@ -145,7 +145,6 @@ class Login extends Component {
             <Typography>
               Don't have an account? <Link to='/signup'>Sign up</Link>.
             </Typography>
-          </form>
         </Grid>
         <Grid item sm />
       </Grid>
