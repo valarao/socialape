@@ -89,6 +89,18 @@ exports.login = async (request, response) => {
     return response.status(201).json({ token });
   } catch (error) {
     console.log(error);
+    if (error.code === 'auth/invalid-email') {
+      return response
+        .status(400)
+        .json({ general: 'Please provide a valid email address' });      
+    }
+
+    if (error.code === 'auth/user-not-found') {
+      return response
+      .status(400)
+      .json({ general: 'The email address provided is not associated with an active account' });    
+    }
+
     if (error.code === 'auth/wrong-password') {
       return response
         .status(403)
