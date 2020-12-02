@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 
+import { connect } from 'react-redux';
+import { signupUser } from '../redux/actions/userActions';
+
 import withStyles from '@material-ui/core/styles/withStyles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -25,9 +28,16 @@ class Signup extends Component {
       password: '',
       confirmPassword: '',
       handle: '',
-      loading: false,
       errors: {},
     };
+  }
+
+  static getDerivedStateFromProps(nextProps, _prevState) {
+    if (nextProps.ui.errors) {
+      return { errors: nextProps.ui.errors };
+    }
+
+    return null;
   }
 
   handleSubmit = async (event) => {
@@ -42,6 +52,8 @@ class Signup extends Component {
       password: this.state.password,
       confirmPassword: this.state.confirmPassword,
     };
+
+    this.props.signupUser(newUserData, this.props.history);
 
     try {
       const signupResult = await axios.post(
@@ -70,8 +82,8 @@ class Signup extends Component {
   };
 
   render() {
-    const { classes } = this.props;
-    const { errors, loading } = this.state;
+    const { classes, ui: { loading } } = this.props;
+    const { errors } = this.state;
 
     return (
       <Grid container className={classes.form}>
@@ -159,6 +171,17 @@ class Signup extends Component {
 
 Signup.propTypes = {
   classes: PropTypes.object.isRequired,
+  user: PropTypes.object.isRequired,
+  ui: PropTypes.object.isRequired,
+  signupUser: PropTypes.func.isRequired,
 };
 
-export default withStyles(styles)(Signup);
+const mapStateToProps = (state) => ({
+  user: state.user,
+  ui: state.ui,
+});
+
+const mapActionsToProps = {
+  signupUser,
+}
+export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles)(Signup));
