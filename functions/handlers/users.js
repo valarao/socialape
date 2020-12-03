@@ -129,6 +129,7 @@ exports.uploadImage = async (request, response) => {
     const busboy = new Busboy({ headers: request.headers });
 
     let imageFilename;
+    let imageUrl;
     let imageToBeUploaded = {};
 
     busboy.on('file', (_fieldname, file, filename, _encoding, mimetype) => {
@@ -144,6 +145,7 @@ exports.uploadImage = async (request, response) => {
       )}.${imageExtension}`;
       const filepath = path.join(os.tmpdir(), imageFilename);
       imageToBeUploaded = { filepath, mimetype };
+      imageUrl = `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${imageFilename}?alt=media`;
       file.pipe(fs.createWriteStream(filepath));
     });
 
@@ -159,16 +161,15 @@ exports.uploadImage = async (request, response) => {
             },
           },
         });
-
-      const imageUrl = `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${imageFilename}?alt=media`;
+      
       await db.doc(`/users/${request.user.handle}`).update({ imageUrl });
     });
 
     busboy.end(request.rawBody);
-
+    
     return response
       .status(201)
-      .json({ message: 'Image uploaded successfully' });
+      .json({ message: 'Image uploaded successfully', imageUrl });
   } catch (error) {
     console.log(error);
     if (error.message === 'Wrong file type submitted') {
