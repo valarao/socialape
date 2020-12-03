@@ -73,7 +73,17 @@ export const uploadImage = (formData) => async (dispatch) => {
     await axios.post(`${FB_FUNCTIONS_URL}/user/image`, formData);
     dispatch(getUserData());
   } catch (error) {
-    console.log(error);    
+    console.log(error);
+  }
+};
+
+export const editUserDetails = (userDetails) => async (dispatch) => {
+  try {
+    dispatch({ type: LOADING_USER });
+    await axios.post(`${FB_FUNCTIONS_URL}/user`, userDetails);
+    dispatch(getUserData());
+  } catch (error) {
+    console.log(error);
   }
 };
 
