@@ -10,12 +10,11 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
 
 import EditIcon from '@material-ui/icons/Edit';
 
 import { editUserDetails } from '../redux/actions/userActions';
+import TooltipButton from './TooltipButton';
 
 const styles = (theme) => ({
   ...theme.common,
@@ -75,11 +74,9 @@ class EditDetails extends Component {
     const { classes } = this.props;
     return (
       <>
-        <Tooltip title='Edit Details' placement='top'>
-          <IconButton onClick={this.handleOpen} className={classes.button}>
-            <EditIcon color='primary' />
-          </IconButton>
-        </Tooltip>
+        <TooltipButton tipTitle='Edit Details' onClick={this.handleOpen} btnClassName={classes.button}>
+          <EditIcon color='primary' />
+        </TooltipButton>
         <Dialog
           open={this.state.open}
           onClose={this.handleClose}
