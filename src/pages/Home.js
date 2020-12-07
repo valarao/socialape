@@ -1,26 +1,24 @@
 import React, { Component } from 'react';
-import axios from 'axios';
-import { FB_FUNCTIONS_URL } from '../util/constants';
+import PropTypes from 'prop-types';
+
+import { connect } from 'react-redux';
+
+import { getScreams } from '../redux/actions/dataActions';
+
 import Grid from '@material-ui/core/Grid';
 
 import Scream from '../components/Scream';
 import Profile from '../components/Profile';
 
 class Home extends Component {
-  state = {
-    screams: [],
-  }
-
   async componentDidMount() {
-    const screamsResponse = await axios.get(`${FB_FUNCTIONS_URL}/screams`);
-    this.setState({
-      screams: screamsResponse.data,
-    });
+    this.props.getScreams();
   }
 
   render() {
-    const recentScreamsMarkup = this.state.screams && this.state.screams.length !== 0 ? (
-      this.state.screams.map((scream) => <Scream key={scream.screamId} scream={scream} />)
+    const { screams, loading } = this.props.data;
+    const recentScreamsMarkup = !loading ? (
+      screams.map((scream) => <Scream key={scream.screamId} scream={scream} />)
     ) : (
       <p>Loading...</p>
     );
@@ -38,4 +36,17 @@ class Home extends Component {
   }
 }
 
-export default Home;
+Home.propTypes = {
+  getScreams: PropTypes.func.isRequired,
+  data: PropTypes.object.isRequired,
+};
+
+const mapStateToProps = (state) => ({
+  data: state.data,
+});
+
+const mapActionsToProps = {
+  getScreams,
+};
+
+export default connect(mapStateToProps, mapActionsToProps)(Home);
