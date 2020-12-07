@@ -5,6 +5,7 @@ import {
   LOADING_DATA,
   LIKE_SCREAM,
   UNLIKE_SCREAM,
+  DELETE_SCREAM,
 } from '../types';
 import { FB_FUNCTIONS_URL } from '../../util/constants';
 
@@ -34,4 +35,13 @@ export const unlikeScream = (screamId) => async (dispatch) => {
   } catch (error) {
     console.log(error);
   }
+};
+
+export const deleteScream = (screamId) => async (dispatch) => {
+  try {
+    await axios.delete(`${FB_FUNCTIONS_URL}/scream/${screamId}`);
+    dispatch({ type: DELETE_SCREAM, payload: screamId });
+  } catch (error) {
+    console.log(error);
+  } 
 };

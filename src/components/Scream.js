@@ -18,9 +18,11 @@ import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 
 import { likeScream, unlikeScream } from '../redux/actions/dataActions';
 import TooltipButton from './TooltipButton';
+import DeleteScream from './DeleteScream';
 
 const styles = {
   card: {
+    position: 'relative',
     display: 'flex',
     marginBottom: 20,
   },
@@ -57,8 +59,11 @@ class Scream extends Component {
       userHandle,
       likeCount,
       commentCount,
+      screamId,
     } = scream;
-    const { authenticated } = user;
+    const { authenticated, credentials } = user;
+    const { handle } = credentials;
+    
 
     dayjs.extend(relativeTime);
 
@@ -78,6 +83,10 @@ class Scream extends Component {
       </TooltipButton>
     );
 
+    const deleteButton = authenticated && userHandle === handle ? (
+      <DeleteScream screamId={screamId} />
+    ) : <></>;
+
     return (
       <Card className={classes.card}>
         <CardMedia
@@ -94,6 +103,7 @@ class Scream extends Component {
           >
             {userHandle}
           </Typography>
+          {deleteButton}
           <Typography variant='body2'>{dayjs(createdAt).fromNow()}</Typography>
           <Typography variant='body1'>{body}</Typography>
           {likeButton}
