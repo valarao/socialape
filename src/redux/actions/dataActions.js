@@ -20,7 +20,7 @@ export const getScreams = () => async (dispatch) => {
 
 export const likeScream = (screamId) => async (dispatch) => {
   try {
-    const axiosResponse = await axios.get(`${FB_FUNCTIONS_URL}/screams/${screamId}/like`);
+    const axiosResponse = await axios.get(`${FB_FUNCTIONS_URL}/scream/${screamId}/like`);
     dispatch({ type: LIKE_SCREAM, payload: axiosResponse.data });
   } catch (error) {
     console.log(error);
@@ -29,7 +29,7 @@ export const likeScream = (screamId) => async (dispatch) => {
 
 export const unlikeScream = (screamId) => async (dispatch) => {
   try {
-    const axiosResponse = await axios.get(`${FB_FUNCTIONS_URL}/screams/${screamId}/unlike`);
+    const axiosResponse = await axios.get(`${FB_FUNCTIONS_URL}/scream/${screamId}/unlike`);
     dispatch({ type: UNLIKE_SCREAM, payload: axiosResponse.data });
   } catch (error) {
     console.log(error);
