@@ -4,7 +4,6 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import PropTypes from 'prop-types';
 
-
 import { connect } from 'react-redux';
 
 import withStyles from '@material-ui/core/styles/withStyles';
@@ -13,7 +12,12 @@ import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
 
+import ChatIcon from '@material-ui/icons/Chat';
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
+
 import { likeScream, unlikeScream } from '../redux/actions/dataActions';
+import TooltipButton from './TooltipButton';
 
 const styles = {
   card: {
@@ -30,15 +34,50 @@ const styles = {
 };
 
 class Scream extends Component {
+  isLiked = () =>
+    this.props.user.likes &&
+    this.props.user.likes.find(
+      (like) => like.screamId === this.props.scream.screamId,
+    );
+
+  likeScream = () => {
+    this.props.likeScream(this.props.scream.screamId);
+  };
+
+  unlikeScream = () => {
+    this.props.unlikeScream(this.props.scream.screamId);
+  };
+
   render() {
-    const { classes, scream } = this.props;
+    const { classes, scream, user } = this.props;
     const {
       body,
       createdAt,
       userImage,
       userHandle,
+      likeCount,
+      commentCount,
     } = scream;
+    const { authenticated } = user;
+
     dayjs.extend(relativeTime);
+
+    const likeButton = !authenticated ? (
+      <TooltipButton tip='Like'>
+        <Link to='/login'>
+          <FavoriteBorderIcon color='primary' />
+        </Link>
+      </TooltipButton>
+    ) : this.isLiked() ? (
+      <TooltipButton tipTitle='Unlike' onClick={this.unlikeScream}>
+        <FavoriteIcon color='primary' />
+      </TooltipButton>
+    ) : (
+      <TooltipButton tipTitle='Like' onClick={this.likeScream}>
+        <FavoriteBorderIcon color='primary' />
+      </TooltipButton>
+    );
+
     return (
       <Card className={classes.card}>
         <CardMedia
@@ -47,11 +86,22 @@ class Scream extends Component {
           className={classes.image}
         />
         <CardContent className={classes.content}>
-          <Typography color='primary' variant='h5' component={Link} to={`/users/${userHandle}`}>
+          <Typography
+            color='primary'
+            variant='h5'
+            component={Link}
+            to={`/users/${userHandle}`}
+          >
             {userHandle}
           </Typography>
           <Typography variant='body2'>{dayjs(createdAt).fromNow()}</Typography>
           <Typography variant='body1'>{body}</Typography>
+          {likeButton}
+          <span>{likeCount} Likes</span>
+          <TooltipButton tipTitle='Comments'>
+            <ChatIcon color='primary' />
+          </TooltipButton>
+          <span>{commentCount} comments</span>
         </CardContent>
       </Card>
     );
@@ -64,7 +114,7 @@ Scream.propTypes = {
   user: PropTypes.object.isRequired,
   scream: PropTypes.object.isRequired,
   classes: PropTypes.object.isRequired,
-}
+};
 
 const mapStateToProps = (state) => ({
   user: state.user,
@@ -75,4 +125,7 @@ const mapActionsToProps = {
   unlikeScream,
 };
 
-export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles)(Scream));
+export default connect(
+  mapStateToProps,
+  mapActionsToProps,
+)(withStyles(styles)(Scream));
