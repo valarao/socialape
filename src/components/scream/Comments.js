@@ -72,11 +72,8 @@ class Comments extends Component {
 }
 
 Comments.propTypes = {
-  getScream: PropTypes.func.isRequired,
-  screamId: PropTypes.string.isRequired,
-  userHandle: PropTypes.string.isRequired,
-  scream: PropTypes.object.isRequired,
-  ui: PropTypes.object.isRequired,
+  comments: PropTypes.array.isRequired,
+  classes: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(Comments);
