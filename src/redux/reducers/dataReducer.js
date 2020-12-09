@@ -47,6 +47,9 @@ const dataReducer = (state = initialState, action) => {
         (scream) => scream.screamId === action.payload.screamId,
       );
       state.screams[index] = action.payload;
+      if (state.scream.screamId === action.payload.screamId) {
+        state.scream = action.payload;
+      }
       return {
         ...state,
       };
