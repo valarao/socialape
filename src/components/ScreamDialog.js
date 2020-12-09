@@ -12,11 +12,13 @@ import Typography from '@material-ui/core/Typography';
 
 import CloseIcon from '@material-ui/icons/Close';
 import UnfoldMoreIcon from '@material-ui/icons/UnfoldMore';
+import ChatIcon from '@material-ui/icons/Chat';
 
 import { connect } from 'react-redux';
 import { getScream } from '../redux/actions/dataActions';
 
 import TooltipButton from './TooltipButton';
+import LikeButton from './LikeButton';
 
 const styles = (theme) => ({
   ...theme.common,
@@ -36,6 +38,14 @@ const styles = (theme) => ({
   closeButton: {
     position: 'absolute',
     left: '90%',
+  },
+  expandButton: {
+    left: '83%',
+  },
+  spinnerDiv: {
+    textAlign: 'center',
+    marginTop: 50,
+    marginBottom: 50,
   }
 });
 
@@ -56,15 +66,20 @@ class ScreamDialog extends Component {
   render() {
     const { classes, scream, ui } = this.props;
     const {
+      screamId,
       body,
       createdAt,
       userImage,
       userHandle,
+      likeCount,
+      commentCount,
     } = scream;
     const { loading } = ui;
 
     const dialogMarkup = loading ? (
-      <CircularProgress size={200} />
+      <div className={classes.spinnerDiv}>
+        <CircularProgress size={200} thickness={2} />
+      </div>
     ) : (
       <Grid container spacing={10}>
         <Grid item sm={5}>
@@ -82,6 +97,12 @@ class ScreamDialog extends Component {
           <Typography variant='body1'>
             {body}
           </Typography>
+          <LikeButton screamId={screamId} />
+          <span>{likeCount} likes</span>
+          <TooltipButton tipTitle='comments'>
+            <ChatIcon color='primary' />
+          </TooltipButton>
+          <span>{commentCount} comments</span>
         </Grid>
       </Grid>
     );
