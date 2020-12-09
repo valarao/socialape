@@ -1,4 +1,5 @@
 import {
+  SET_SCREAM,
   SET_SCREAMS,
   LIKE_SCREAM,
   UNLIKE_SCREAM,
@@ -27,6 +28,11 @@ const dataReducer = (state = initialState, action) => {
         screams: action.payload,
         loading: false,
       };
+    case SET_SCREAM:
+      return {
+        ...state,
+        scream: action.payload,
+      }
     case POST_SCREAM:
       return {
         ...state,

@@ -19,6 +19,7 @@ import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import { likeScream, unlikeScream } from '../redux/actions/dataActions';
 import TooltipButton from './TooltipButton';
 import DeleteScream from './DeleteScream';
+import ScreamDialog from './ScreamDialog';
 
 const styles = {
   card: {
@@ -112,6 +113,7 @@ class Scream extends Component {
             <ChatIcon color='primary' />
           </TooltipButton>
           <span>{commentCount} comments</span>
+          <ScreamDialog screamId={screamId} userHandle={userHandle} />
         </CardContent>
       </Card>
     );

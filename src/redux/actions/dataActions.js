@@ -4,12 +4,14 @@ import {
   SET_SCREAMS,
   LOADING_DATA,
   LOADING_UI,
+  STOP_LOADING_UI,
   LIKE_SCREAM,
   UNLIKE_SCREAM,
   DELETE_SCREAM,
   POST_SCREAM,
   SET_ERRORS,
-  CLEAR_ERRORS
+  CLEAR_ERRORS,
+  SET_SCREAM
 } from '../types';
 import { FB_FUNCTIONS_URL } from '../../util/constants';
 
@@ -22,6 +24,17 @@ export const getScreams = () => async (dispatch) => {
     dispatch({ type: SET_SCREAMS, payload: [] });
   }
 };
+
+export const getScream = (screamId) => async (dispatch) => {
+  dispatch({ type: LOADING_UI });
+  try {
+    const axiosResponse = await axios.get(`${FB_FUNCTIONS_URL}/scream/${screamId}`);
+    dispatch({ type: SET_SCREAM, payload: axiosResponse.data });
+    dispatch({ type: STOP_LOADING_UI });
+  } catch (error) {
+    console.log(error);
+  }
+}
 
 export const postScream = (newScream) => async (dispatch) => {
   try {
