@@ -3,9 +3,13 @@ import axios from 'axios';
 import {
   SET_SCREAMS,
   LOADING_DATA,
+  LOADING_UI,
   LIKE_SCREAM,
   UNLIKE_SCREAM,
   DELETE_SCREAM,
+  POST_SCREAM,
+  SET_ERRORS,
+  CLEAR_ERRORS
 } from '../types';
 import { FB_FUNCTIONS_URL } from '../../util/constants';
 
@@ -18,6 +22,17 @@ export const getScreams = () => async (dispatch) => {
     dispatch({ type: SET_SCREAMS, payload: [] });
   }
 };
+
+export const postScream = (newScream) => async (dispatch) => {
+  try {
+    dispatch({ type: LOADING_UI });
+    const axiosResponse = await axios.post(`${FB_FUNCTIONS_URL}/scream`, newScream);
+    dispatch({ type: POST_SCREAM, payload: axiosResponse.data });
+    dispatch({ type: CLEAR_ERRORS });
+  } catch (error) {
+    dispatch({ type: SET_ERRORS, payload: error.response.data });
+  }
+}
 
 export const likeScream = (screamId) => async (dispatch) => {
   try {
@@ -45,3 +60,11 @@ export const deleteScream = (screamId) => async (dispatch) => {
     console.log(error);
   } 
 };
+
+export const clearErrors = () => (dispatch) => {
+  try {
+    dispatch({ type: CLEAR_ERRORS });
+  } catch (error) {
+    console.log(error);
+  }
+}
