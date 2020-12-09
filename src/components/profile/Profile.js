@@ -18,8 +18,8 @@ import KeyboardReturnIcon from '@material-ui/icons/KeyboardReturn';
 import EditIcon from '@material-ui/icons/Edit';
 
 import EditDetails from './EditDetails';
-import { logoutUser, uploadImage } from '../redux/actions/userActions';
-import TooltipButton from './TooltipButton';
+import { logoutUser, uploadImage } from '../../redux/actions/userActions';
+import TooltipButton from '../common/TooltipButton';
 
 const styles = (theme) => ({
   paper: {
