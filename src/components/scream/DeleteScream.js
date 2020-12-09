@@ -10,8 +10,8 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogActions from '@material-ui/core/DialogActions';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 
-import { deleteScream } from '../redux/actions/dataActions';
-import TooltipButton from './TooltipButton';
+import { deleteScream } from '../../redux/actions/dataActions';
+import TooltipButton from '../common/TooltipButton';
 
 const styles = {
   deleteButton: {

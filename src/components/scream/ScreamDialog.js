@@ -15,17 +15,14 @@ import UnfoldMoreIcon from '@material-ui/icons/UnfoldMore';
 import ChatIcon from '@material-ui/icons/Chat';
 
 import { connect } from 'react-redux';
-import { getScream } from '../redux/actions/dataActions';
+import { getScream } from '../../redux/actions/dataActions';
 
-import TooltipButton from './TooltipButton';
+import TooltipButton from '../common/TooltipButton';
 import LikeButton from './LikeButton';
+import Comments from './Comments';
 
 const styles = (theme) => ({
   ...theme.common,
-  invisibleSeparator: {
-    border: 'none',
-    margin: 4,
-  },
   profileImage: {
     maxWidth: 200,
     height: 200,
@@ -73,6 +70,7 @@ class ScreamDialog extends Component {
       userHandle,
       likeCount,
       commentCount,
+      comments,
     } = scream;
     const { loading } = ui;
 
@@ -104,6 +102,8 @@ class ScreamDialog extends Component {
           </TooltipButton>
           <span>{commentCount} comments</span>
         </Grid>
+        <hr className={classes.visibleSeparator} />
+        <Comments comments={comments} />
       </Grid>
     );
 

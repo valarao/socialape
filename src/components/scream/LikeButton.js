@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import TooltipButton from './TooltipButton';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
@@ -7,7 +6,9 @@ import FavoriteIcon from '@material-ui/icons/Favorite';
 import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 
 import { connect } from 'react-redux';
-import { likeScream, unlikeScream } from '../redux/actions/dataActions';
+import { likeScream, unlikeScream } from '../../redux/actions/dataActions';
+
+import TooltipButton from '../common/TooltipButton';
 
 class LikeButton extends Component {
   isLiked = () =>

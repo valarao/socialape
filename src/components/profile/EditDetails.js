@@ -13,8 +13,8 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 import EditIcon from '@material-ui/icons/Edit';
 
-import { editUserDetails } from '../redux/actions/userActions';
-import TooltipButton from './TooltipButton';
+import { editUserDetails } from '../../redux/actions/userActions';
+import TooltipButton from '../common/TooltipButton';
 
 const styles = (theme) => ({
   ...theme.common,

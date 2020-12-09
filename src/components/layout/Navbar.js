@@ -11,8 +11,8 @@ import Button from '@material-ui/core/Button';
 import HomeIcon from '@material-ui/icons/Home';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 
-import TooltipButton from './TooltipButton';
-import PostScream from './PostScream';
+import TooltipButton from '../common/TooltipButton';
+import PostScream from '../scream/PostScream';
 
 class Navbar extends Component {
   render() {
