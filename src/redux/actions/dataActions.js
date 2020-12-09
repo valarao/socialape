@@ -9,6 +9,7 @@ import {
   UNLIKE_SCREAM,
   DELETE_SCREAM,
   POST_SCREAM,
+  SUBMIT_COMMENT,
   SET_ERRORS,
   CLEAR_ERRORS,
   SET_SCREAM
@@ -73,6 +74,16 @@ export const deleteScream = (screamId) => async (dispatch) => {
     console.log(error);
   } 
 };
+
+export const submitComment = (screamId, commentData) => async (dispatch) => {
+  try {
+    const axiosResponse = await axios.post(`${FB_FUNCTIONS_URL}/scream/${screamId}/comment`, commentData);
+    dispatch({ type: SUBMIT_COMMENT, payload: axiosResponse.data });
+    dispatch({ type: CLEAR_ERRORS });
+  } catch (error) {
+    dispatch({ type: SET_ERRORS, payload: error.response.data });
+  }
+}
 
 export const clearErrors = () => (dispatch) => {
   try {
