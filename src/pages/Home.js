@@ -9,6 +9,7 @@ import Grid from '@material-ui/core/Grid';
 
 import Scream from '../components/scream/Scream';
 import Profile from '../components/profile/Profile';
+import ScreamSkeleton from '../components/skeletons/ScreamSkeleton';
 
 class Home extends Component {
   async componentDidMount() {
@@ -20,7 +21,7 @@ class Home extends Component {
     const recentScreamsMarkup = !loading ? (
       screams.map((scream) => <Scream key={scream.screamId} scream={scream} />)
     ) : (
-      <p>Loading...</p>
+      <ScreamSkeleton />
     );
 
     return (
