@@ -16,6 +16,7 @@ import Navbar from './components/layout/Navbar';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import User from './pages/User';
 
 import AuthRoute from './util/authRoute';
 import { themeConfig } from './util/theme';
@@ -57,6 +58,7 @@ class App extends Component {
                     path='/signup'
                     component={Signup}
                   />
+                  <Route exact path='/users/:handle' component={User} />
                 </Switch>
               </div>
             </Router>
