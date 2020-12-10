@@ -8,6 +8,7 @@ import {
   LOADING_UI,
   SET_UNAUTHENTICATED,
   LOADING_USER,
+  MARK_NOTIFICATIONS_READ,
 } from '../types';
 
 export const loginUser = (userData, history) => async (dispatch) => {
@@ -86,6 +87,16 @@ export const editUserDetails = (userDetails) => async (dispatch) => {
     console.log(error);
   }
 };
+
+export const markNotificationsRead = (notificationIds) => async (dispatch) => {
+  try {
+    console.log('boop');
+    await axios.post(`${FB_FUNCTIONS_URL}/notifications`, notificationIds);
+    dispatch({ type: MARK_NOTIFICATIONS_READ });
+  } catch (error) {
+    console.log(error);
+  }
+}
 
 const setAuthorizationHeader = (token) => {
   const FBIdToken = `Bearer ${token}`;

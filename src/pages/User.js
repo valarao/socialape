@@ -14,10 +14,17 @@ import { FB_FUNCTIONS_URL } from '../util/constants';
 class User extends Component {
   state = {
     profile: null,
+    screamIdParam: null,
   }
 
   async componentDidMount() {
     const handle = this.props.match.params.handle;
+    const screamId = this.props.match.params.screamId;
+
+    if (screamId) {
+      this.setState({ screamIdParam: screamId })
+    }
+
     this.props.getUserData(handle);
 
     try {
@@ -30,12 +37,22 @@ class User extends Component {
 
   render() {
     const { screams, loading } = this.props.data;
+    const { screamIdParam } = this.state;
+
     const screamsMarkup = loading ? (
       <p>Loading data...</p>
     ) : screams === null ? (
       <p>No screams from this user</p>
-    ) : (
+    ) : !screamIdParam ? (
       screams.map((scream) => <Scream key={scream.screamId} scream={scream} />)
+    ) : (
+      screams.map((scream) => {
+        if (scream.screamId !== screamIdParam) {
+          return <Scream key={scream.screamId} scream={scream} />
+        }
+
+        return <Scream key={scream.screamId} scream={scream} openDialog />;
+      })
     );
 
     return (

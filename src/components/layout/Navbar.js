@@ -9,8 +9,8 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
 
 import HomeIcon from '@material-ui/icons/Home';
-import NotificationsIcon from '@material-ui/icons/Notifications';
 
+import Notifications from './Notifications';
 import TooltipButton from '../common/TooltipButton';
 import PostScream from '../scream/PostScream';
 
@@ -28,9 +28,7 @@ class Navbar extends Component {
                   <HomeIcon />
                 </TooltipButton>
               </Link>
-              <TooltipButton tipTitle='Notifications'>
-                <NotificationsIcon />
-              </TooltipButton>
+                <Notifications />
             </>
           ) : (
             <>
