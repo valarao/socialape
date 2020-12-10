@@ -85,6 +85,16 @@ export const submitComment = (screamId, commentData) => async (dispatch) => {
   }
 }
 
+export const getUserData = (userHandle) => async (dispatch) => {
+  try {
+    dispatch({ type: LOADING_DATA });
+    const axiosResponse = await axios.get(`${FB_FUNCTIONS_URL}/user/${userHandle}`);
+    dispatch({ type: SET_SCREAMS, payload: axiosResponse.data.screams });
+  } catch (error) {
+    dispatch({ type: SET_SCREAMS, payload: [] });
+  }
+} 
+
 export const clearErrors = () => (dispatch) => {
   try {
     dispatch({ type: CLEAR_ERRORS });
