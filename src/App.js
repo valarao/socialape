@@ -59,6 +59,7 @@ class App extends Component {
                     component={Signup}
                   />
                   <Route exact path='/users/:handle' component={User} />
+                  <Route exact path='/users/:handle/scream/:screamId' component={User} />
                 </Switch>
               </div>
             </Router>
